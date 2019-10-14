@@ -1,6 +1,5 @@
 from queue import PriorityQueue
 from functools import reduce
-import operator
 
 
 class HuffmanNode(object):
@@ -14,18 +13,27 @@ class HuffmanNode(object):
         return (self.left, self.right)
 
     def __lt__(self, other):
+        if not isinstance(other, HuffmanNode):
+            raise Exception(
+                f'\'<\' operator can only be used with other HuffmanNode, {type(other).__name__} provided instead')
         return self.weight < other.weight
 
     def __gt__(self, other):
+        if not isinstance(other, HuffmanNode):
+            raise Exception(
+                f'\'>\' operator can only be used with other HuffmanNode, {type(other).__name__} provided instead')
         return self.weight > other.weight
 
 
 class HuffmanCoder:
-    def __init__(self, text):
+    def __init__(self, text, table=None):
         self.text = text
-        self.symbols_freq = self.__create_symbols_dict()
-        self.tree = self.__create_tree()
-        self.codes = self.__assign_codes()
+        if table is None:
+            freq_table = self.__create_symbols_dict()
+            tree = self.__create_tree(freq_table)
+            self.codes_table = self.__assign_codes(node=tree)
+        else:
+            self.codes_table = table
 
     def __create_symbols_dict(self):
         symbols = {}
@@ -36,12 +44,10 @@ class HuffmanCoder:
                 symbols[symbol] = 1
         return symbols
 
-    def __create_tree(self):
+    def __create_tree(self, freq_table):
         q = PriorityQueue()
-        for symbol in self.symbols_freq:
-            q.put(
-                HuffmanNode(symbol, self.symbols_freq[symbol])
-            )
+        for symbol in freq_table:
+            q.put(HuffmanNode(symbol, freq_table[symbol]))
         while q.qsize() > 1:
             l, r = q.get(), q.get()
             l, r = (l, r) if l < r else (r, l)
@@ -53,9 +59,7 @@ class HuffmanCoder:
             q.put(node)
         return q.get()
 
-    def __assign_codes(self, node=None, prefix='', codes={}):
-        if node is None:
-            node = self.tree
+    def __assign_codes(self, node, prefix='', codes={}):
         if node.symbol is None:
             self.__assign_codes(node.left, prefix=prefix+'0', codes=codes)
             self.__assign_codes(node.right, prefix=prefix+'1', codes=codes)
@@ -64,26 +68,14 @@ class HuffmanCoder:
         return codes
 
     def get_table(self):
-        pass
+        return self.codes_table
 
     def encode(self):
         accum = ''
         for char in self.text:
-            accum += f'{self.codes[char]} '
+            accum += self.codes_table[char]
         return accum
 
     def decode(self):
         pass
 
-
-def main():
-    with open('./text.txt') as lines:
-        text = reduce(lambda acc, el: acc + el, lines)
-        coder = HuffmanCoder(text)
-        encoded = coder.encode()
-        print(len(text.encode('utf-8')) * 8 / len(encoded.replace(' ', '')))
-        # for code in codes:
-        #    print('\'{}\' = {}'.format(code, codes[code]))
-
-
-main()
