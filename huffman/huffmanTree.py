@@ -1,3 +1,4 @@
+import re
 from queue import PriorityQueue
 from functools import reduce
 
@@ -26,18 +27,12 @@ class HuffmanNode(object):
 
 
 class HuffmanCoder:
-    def __init__(self, text, table=None):
-        self.text = text
-        if table is None:
-            freq_table = self.__create_symbols_dict()
-            tree = self.__create_tree(freq_table)
-            self.codes_table = self.__assign_codes(node=tree)
-        else:
-            self.codes_table = table
+    def __init__(self):
+        pass
 
-    def __create_symbols_dict(self):
+    def __create_symbols_dict(self, text):
         symbols = {}
-        for symbol in self.text:
+        for symbol in text:
             try:
                 symbols[symbol] += 1
             except KeyError:
@@ -67,15 +62,23 @@ class HuffmanCoder:
             codes[node.symbol] = prefix
         return codes
 
-    def get_table(self):
-        return self.codes_table
+    def __parse_table(self, text):
+        return dict(re.findall(r'([01]+):([^;]+);', text))
 
-    def encode(self):
-        accum = ''
-        for char in self.text:
-            accum += self.codes_table[char]
-        return accum
+    def encode(self, text):
+        freq_table = self.__create_symbols_dict(text)
+        tree = self.__create_tree(freq_table)
+        codes_table = self.__assign_codes(node=tree)
+        return (codes_table, reduce(lambda accum, char: accum + codes_table[char], list(text), ''))
 
-    def decode(self):
-        pass
+    def decode(self, text):
+        table = self.__parse_table(text)
+        result, buffer = '', ''
+        for char in text:
+            try:
+                result += table[buffer]
+                buffer = ''
+            except KeyError:
+                buffer += char
+        return result
 
