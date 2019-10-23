@@ -1,6 +1,6 @@
 # Huffman text file compressor
 
-Package for compressing files with [Huffman coding](https://en.wikipedia.org/wiki/Huffman_coding).
+Package for compressing files with [Huffman coding](https://en.wikipedia.org/wiki/Huffman_coding). Please note that this compressor **works only with ASCII** characters and will crash trying to parse Unicode.
 
 ## Try it out
 
