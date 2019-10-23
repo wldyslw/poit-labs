@@ -25,7 +25,7 @@ Compressing:
 1. Read text from input file
 2. Create frequencies table using `collections.Counter`
 3. Create Huffman tree nodes and merge them into tree with help of `PriorityQueue`
-4. Create codes mapping table (e.g. `{ 'a': '000', 'b': 010 ... }`)
+4. Create codes mapping table (e.g. `{ 'a': '000', 'b': '010', ... }`)
 5. Encode text using table above
 6. Encode Huffman tree (`0` for each node, `1` + encoded ASCII char for each leaf)
 7. Add padding bits and merge encoded tree and text
