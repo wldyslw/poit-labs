@@ -2,8 +2,8 @@ from math import fabs
 from random import shuffle
 
 QUEEN = '♛'
-# EMPTY = '▢'
-EMPTY = '0'
+BLACK = '⬛'
+WHITE = '⬜'
 
 
 class Queen:
@@ -17,16 +17,18 @@ class Queen:
             fabs(self.x - other.x) == fabs(self.y - other.y)
         )
 
-    def __repr__(self):
-        return f'<Queen(x={self.x}, y={self.y})>'
-
 
 def draw_board(queens):
+    def get_empty_color(x, y):
+        return BLACK if (x + y) % 2 else WHITE
+
     queen_coords = list(map(lambda q: (q.x, q.y), queens))
-    arr = [[QUEEN if (x, y) in queen_coords else EMPTY for x in range(0, 8)] for y in range(0, 8)]
+    arr = [[QUEEN if (x, y) in queen_coords else get_empty_color(x, y)
+            for x in range(0, 8)] for y in range(0, 8)]
 
     for col in arr:
         print(' '.join(col))
+    print(f'Queens are arranged, {len(queens)} total')
 
 
 def main():
